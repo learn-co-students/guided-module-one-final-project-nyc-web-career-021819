@@ -4,5 +4,6 @@ class User < ActiveRecord::Base
 
 
   def sanitize_username
+    new_user = User.new()
   end
 end
