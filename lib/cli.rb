@@ -50,7 +50,8 @@ class CommandLineInterface
            #  Remove user from repo
            #  Add user to repo
              # Enter username to add
-                # If user already part of repo, 
+                # If user already part of repo, puts "user already on repo"
+                # If not, add user to repo
            #  Delete repo?
 
     puts "3. Find all collaborators for a project"
