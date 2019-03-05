@@ -97,8 +97,6 @@ class CommandLineInterface
             input = gets_user_input
             puts input
             user = find_user(input)
-            # binding.pry
-
             if username_exists?(user.github_username)
               if already_on_repo?(user, selected_repo)
                 puts "#{user.name} is already working on #{selected_repo.project_name}"
@@ -109,7 +107,15 @@ class CommandLineInterface
             end
             break
           when 3
-            puts "entered 3"
+            puts "Are you sure you want to delete #{selected_repo.project_name}? (y/n)"
+            input = gets_user_input[0].downcase
+            if input == "y"
+              Repo.destroy(selected_repo.id)
+              puts "Repo deleted!"
+              puts Repo.all
+            else
+              puts "Good idea. Never delete your repos!"
+            end
           end
         end
         break
