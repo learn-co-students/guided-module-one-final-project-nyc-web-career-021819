@@ -48,17 +48,12 @@ class CommandLineInterface
 
     puts "2. Find all projects with a keyword"
       # Enter the keyword that you're looking for
-       # => returns array ["1. Project 1", "2. Project 2"] or "No repos found with this keyword"
+       # => returns list or "No repos found with this keyword"
                 # Prompt: Select repo number to view repo details
                   # (user chooses 1, 2, 3, etc.) => returns [name: "Project 1", desc: "blah blah"] for example
-                      #  1. Remove user from repo
-                      #  2. Add user to repo
-                        #  => Enter username to add
-                            # If user already part of repo, puts "user already on repo"
-                            # If not, add user to repo
-                                # => "user added to repo"
-                                  # loops back to 2.
-                      #  3. Delete repo?
+                      #  1. Show repo URL
+                      #  2. Update name
+                      #  3. Update description
 
     puts "3. Find all collaborators for a project"
       # 3a. "Enter a project name"
@@ -120,8 +115,46 @@ class CommandLineInterface
         end
         break
       when 2
-        # post_index
-        puts "still in menu loop"
+        puts "Enter keyword:"
+        input = gets_user_input.downcase
+        repos_by_keyword = find_repo_by_keyword(input)
+        if repos_by_keyword.empty?
+          puts "There are no repos with '#{input}' in the description."
+        else
+          repos_by_keyword.each_with_index do |repo, index|
+            puts "#{index + 1}. #{repo.project_name} - #{repo.description}"
+          end
+        end
+        puts "Select repo number to view repo details"
+        input = gets_user_input
+        selected_repo = repos_by_keyword[input.to_i - 1]
+        puts "#{selected_repo.project_name} - #{selected_repo.description}"
+        puts "1. Show Repo URL"
+        puts "2. Update Repo name"
+        puts "3. Update Repo description"
+        while user_input != "exit"
+          case @last_input.to_i
+          when 1
+            # show repo URL
+            puts "#{selected_repo.project_name} - #{selected_repo.repo_url}"
+            # add functionality to open url in browser
+            break
+          when 2
+            # update repo name
+            puts "Enter new Repo name:"
+            input = gets_user_input
+            selected_repo.update_attribute(:project_name, input)
+            puts selected_repo.project_name
+            break
+          when 3
+            # update repo description
+            puts "Enter new Repo description:"
+            input = gets_user_input
+            selected_repo.update_attribute(:description, input)
+            puts selected_repo.description
+            break
+          end
+        end
         break
       else
         menu
@@ -153,7 +186,7 @@ class CommandLineInterface
 
   def find_repo_by_keyword(keyword)
     Repo.all.select do |repo|
-      repo.description.include?(keyword)
+      repo.description.downcase.include?(keyword)
     end
   end
 
