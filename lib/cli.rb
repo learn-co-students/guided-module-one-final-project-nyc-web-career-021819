@@ -37,24 +37,7 @@ class CommandLineInterface
   def menu
     puts "What would you like to do?"
     puts "1. Find all projects by username"
-      # returns array ["1. Project 1", "2. Project 2"]
-      # Select repo number to view repo details
-        # => [name: "Project 1", desc: "blah blah"]
-          # Give user options:
-          #  Remove user from repo
-          #  Add another user to repo
-            # Enter username to add
-          #  Delete repo?
-
     puts "2. Find all projects with a keyword"
-      # Enter the keyword that you're looking for
-       # => returns list or "No repos found with this keyword"
-                # Prompt: Select repo number to view repo details
-                  # (user chooses 1, 2, 3, etc.) => returns [name: "Project 1", desc: "blah blah"] for example
-                      #  1. Show repo URL
-                      #  2. Update name
-                      #  3. Update description
-
     puts "3. Find all collaborators for a project"
       # 3a. "Enter a project name"
       # 4.
@@ -84,10 +67,12 @@ class CommandLineInterface
         while user_input != "exit"
           case @last_input.to_i
           when 1
+            # Remove user from repo
             UserRepo.destroy(user_repo.id)
             puts "Deleted #{user.name} from #{selected_repo.project_name}!"
             break
           when 2
+            # Add user to repo
             puts "Who do you want to add? (enter username with *EXACT* spelling and capitalization):"
             input = gets_user_input
             puts input
@@ -102,6 +87,7 @@ class CommandLineInterface
             end
             break
           when 3
+            # Delete Repo
             puts "Are you sure you want to delete #{selected_repo.project_name}? (y/n)"
             input = gets_user_input[0].downcase
             if input == "y"
@@ -155,7 +141,17 @@ class CommandLineInterface
             break
           end
         end
-        break
+      when 3
+        puts "Enter a project name:"
+        input = gets_user_input
+        repo_by_project_name = find_repo_by_project_name(input)
+        if repo_by_project_name == nil
+          puts "No project found"
+        else
+          binding.pry
+          puts repo_by_project_name.users
+        end
+        # puts repo_by_project_name.users unless repo_by_project_name == nil
       else
         menu
         break
@@ -188,6 +184,10 @@ class CommandLineInterface
     Repo.all.select do |repo|
       repo.description.downcase.include?(keyword)
     end
+  end
+
+  def find_repo_by_project_name(project_name)
+    Repo.all.find_by(project_name: project_name)
   end
 
   def user_input
