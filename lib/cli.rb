@@ -12,6 +12,10 @@ class CommandLineInterface
     !!User.all.find_by(github_username: github_username)
   end
 
+  def already_on_repo?(user, repo)
+    repo.users.include?(user)
+  end
+
   def find_user(github_username)
     if username_exists?(github_username)
       User.all.find_by(github_username: github_username)
@@ -87,8 +91,23 @@ class CommandLineInterface
           when 1
             UserRepo.destroy(user_repo.id)
             puts "Deleted #{user.name} from #{selected_repo.project_name}!"
+            break
           when 2
-            puts "user entered 2"
+            puts "Who do you want to add? (enter username with *EXACT* spelling and capitalization):"
+            input = gets_user_input
+            puts input
+            user = find_user(input)
+            # binding.pry
+
+            if username_exists?(user.github_username)
+              if already_on_repo?(user, selected_repo)
+                puts "#{user.name} is already working on #{selected_repo.project_name}"
+              else
+                user.repos << selected_repo
+                selected_repo.users.each {|user| puts user.github_username}
+              end
+            end
+            break
           when 3
             puts "entered 3"
           end
