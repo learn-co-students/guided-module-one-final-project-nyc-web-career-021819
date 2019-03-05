@@ -5,8 +5,11 @@ class CommandLineInterface
   end
 
   def gets_user_input
-    # puts "Enter a github username **WITH EXACT CAPITALIZATION** to list that user's projects:"
+
     gets.chomp
+  end
+
+  def option_1_sub_menu
   end
 
   def username_exists?(github_username)
@@ -24,7 +27,7 @@ class CommandLineInterface
   def run
     greet
     menu
-    input = gets_user_input
+    # input = gets_user_input
     # user = find_user(input)
     # repos = find_repos(user)
     # show_repos(repos)
@@ -44,37 +47,47 @@ class CommandLineInterface
 
     puts "2. Find all projects with a keyword"
       # Enter the keyword that you're looking for
-       # => returns array ["1. Project 1", "2. Project 2"] or "No repos found"
-       # Select repo number to view repo details
-         # => [name: "Project 1", desc: "blah blah"]
-           #  Remove user from repo
-           #  Add user to repo
-             # Enter username to add
-                # If user already part of repo, puts "user already on repo"
-                # If not, add user to repo
-           #  Delete repo?
+       # => returns array ["1. Project 1", "2. Project 2"] or "No repos found with this keyword"
+                # Prompt: Select repo number to view repo details
+                  # (user chooses 1, 2, 3, etc.) => returns [name: "Project 1", desc: "blah blah"] for example
+                      #  1. Remove user from repo
+                      #  2. Add user to repo
+                        #  => Enter username to add
+                            # If user already part of repo, puts "user already on repo"
+                            # If not, add user to repo
+                                # => "user added to repo"
+                                  # loops back to 2.
+                      #  3. Delete repo?
 
     puts "3. Find all collaborators for a project"
       # 3a. "Enter a project name"
       # 4.
-    # main_menu_loop
+    main_menu_loop
   end
   #
-  # def main_menu_loop
-  #   while user_input != "exit"
-  #     case last_input.to_i
-  #     when 1
-  #       post_new
-  #       break
-  #     when 2
-  #       post_index
-  #       break
-  #     else
-  #       menu
-  #       break
-  #     end
-  #   end
-  # end
+  def main_menu_loop
+    while user_input != "exit"
+      case @last_input.to_i
+      when 1
+        puts "Enter a github username **WITH EXACT CAPITALIZATION** to list that user's projects:"
+        input = gets_user_input
+        user = find_user(input)
+        repos = find_repos(user)
+        show_repos(repos)
+        puts "Select repo number to view repo details"
+        input = gets_user_input
+        puts repos[input.to_i - 1].project_name
+        break
+      when 2
+        # post_index
+        puts "still in menu loop"
+        break
+      else
+        menu
+        break
+      end
+    end
+  end
 
 
   def find_repos(user)
@@ -82,9 +95,11 @@ class CommandLineInterface
   end
 
   def show_repos(repos)
-    repos.each do |repo|
-      puts repo.project_name
+
+    repos.each_with_index do |repo, index|
+      puts "#{index+1}. #{repo.project_name}"
     end
+
   end
 
   def find_repo_by_keyword(keyword)
@@ -93,5 +108,8 @@ class CommandLineInterface
     end
   end
 
+  def user_input
+    @last_input = gets.strip
+  end
 
 end
