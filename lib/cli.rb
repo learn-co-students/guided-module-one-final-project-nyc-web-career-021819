@@ -5,11 +5,7 @@ class CommandLineInterface
   end
 
   def gets_user_input
-
     gets.chomp
-  end
-
-  def option_1_sub_menu
   end
 
   def username_exists?(github_username)
@@ -40,6 +36,7 @@ class CommandLineInterface
       # returns array ["1. Project 1", "2. Project 2"]
       # Select repo number to view repo details
         # => [name: "Project 1", desc: "blah blah"]
+          # Give user options:
           #  Remove user from repo
           #  Add another user to repo
             # Enter username to add
@@ -76,7 +73,26 @@ class CommandLineInterface
         show_repos(repos)
         puts "Select repo number to view repo details"
         input = gets_user_input
-        puts repos[input.to_i - 1].project_name
+        selected_repo = repos[input.to_i - 1]
+        user_repo = find_user_repo(user, selected_repo)
+        # puts "Repo name:" + repos[input.to_i - 1].project_name + " " + repos[input.to_i - 1].description
+        puts "Repo name: #{repos[input.to_i - 1].project_name}"
+        puts "Description: #{repos[input.to_i - 1].description}"
+        puts "What would you like to do?"
+        puts "1. Remove current user from repo"
+        puts "2. Add another user to repo"
+        puts "3. Delete repo"
+        while user_input != "exit"
+          case @last_input.to_i
+          when 1
+            UserRepo.destroy(user_repo.id)
+            puts "Deleted #{user.name} from #{selected_repo.project_name}!"
+          when 2
+            puts "user entered 2"
+          when 3
+            puts "entered 3"
+          end
+        end
         break
       when 2
         # post_index
@@ -88,6 +104,14 @@ class CommandLineInterface
       end
     end
   end
+
+  def find_user_repo(user, repo)
+    UserRepo.find_by("user_id = ? AND repo_id = ?", user.id, repo.id)
+  end
+
+  # def remove_user_from_repo(user_repo)
+  #   user_repo.destroy
+  # end
 
 
   def find_repos(user)
